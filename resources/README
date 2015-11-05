@@ -1,0 +1,4 @@
+This application required token or session based authentication
+
+Token Based Authentication:
+    curl http://localhost:8000/api-token-auth/ -X POST -d "username=user_name&password=passw"
