@@ -1,1 +1,1 @@
-web: python manage.py runserver 0.0.0.0:9000 --noreload
+web: gunicorn imdb.wsgi -b 0.0.0.0:$PORT -w 10
