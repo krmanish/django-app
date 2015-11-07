@@ -22,6 +22,9 @@ class Genres(IMDBDatetime):
     genre = models.CharField(max_length=25, unique=True, help_text="Genre Name")
     is_active = models.BooleanField(default=True, help_text="Flags to mark data as active or inactive")
 
+    class Meta:
+        unique_together = ('genre', 'is_active')
+
     def __unicode__(self):
         """
         Return object info
@@ -51,6 +54,10 @@ class Directors(IMDBDatetime):
         Return object info
         """
         return self.full_name
+
+
+    class Meta:
+        unique_together = ('full_name', 'is_active')
 
     @classmethod
     def get_all(cls):
@@ -87,29 +94,29 @@ class Movies(IMDBDatetime):
         return self.name
 
     @classmethod
-    def get_all_movies(self):
+    def get_all_movies(cls):
         """
         Get all active and non-deleted movies list
         """
-        return self.objects.filter(is_active=True, is_deleted=False, director__is_active=True, genre__is_active=True)
+        return cls.objects.filter(is_active=True, is_deleted=False, director__is_active=True, genre__is_active=True)
 
     @classmethod
-    def get_name_by_genre(self, genre_id):
+    def get_name_by_genre(cls, genre_id):
         """
         Get all movies by genre
         """
-        return self.objects.filter(is_active=True, is_deleted=False, genre__id=genre_id)
+        return cls.objects.filter(is_active=True, is_deleted=False, genre__id=genre_id)
 
     @classmethod
-    def get_name_by_user(self, user_id):
+    def get_name_by_user(cls, user_id):
         """
         get record by user
         """
-        return self.objects.filter(is_active=True, is_deleted=False, user__id=user_id)
+        return cls.objects.filter(is_active=True, is_deleted=False, user__id=user_id)
 
     @classmethod
-    def get_name_by_user(self, director_id):
+    def get_name_by_user(cls, director_id):
         """
         get movies by director
         """
-        return self.objects.filter(is_active=True, is_deleted=False, director__id=director_id)
+        return cls.objects.filter(is_active=True, is_deleted=False, director__id=director_id)
