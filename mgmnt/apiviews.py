@@ -12,10 +12,34 @@ from rest_framework.authentication import (
     TokenAuthentication,
 )
 from rest_framework.filters import DjangoFilterBackend
+from rest_framework.parsers import FormParser, JSONParser
 from rest_framework.response import Response
 
 
-class MovieViewSet(viewsets.ModelViewSet):
+class IMDBUserPermission(viewsets.ModelViewSet):
+    """
+    Maintain the user permission
+    """
+    authentication_classes = (TokenAuthentication, SessionAuthentication,)
+    permission_classes = (IMDBUserPermission, )
+    parser_classes = (JSONParser, FormParser, )
+
+    def destroy(self, request, *args, **kwargs):
+        """
+        Go with soft delete
+        """
+        instance = self.get_object()
+        instance.is_active = False
+
+        # For movie record
+        if hasattr(instance, 'is_deleted'):
+            instance.is_deleted = True
+
+        instance.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class MovieViewSet(IMDBUserPermission):
     """
     Viewset for movies info for list/retrieve/delete/update
     Allow search by name
@@ -28,25 +52,14 @@ class MovieViewSet(viewsets.ModelViewSet):
         Search:
             curl http://localhost:8000/api/movies/?genre_name=Adventure\&popularity=83.00 -X GET -H "Authorization: Token <token_id>"
     """
-    authentication_classes = (TokenAuthentication, SessionAuthentication,)
-    permission_classes = (IMDBUserPermission, )
 
     serializer_class = MoviesSerializer
     queryset = Movies.get_all_movies()
     filter_backends = (DjangoFilterBackend, )
     filter_class = MoviesFilter
 
-    def destroy(self, request, *args, **kwargs):
-        """
-        Go with soft delete
-        """
-        instance = self.get_object()
-        instance.is_deleted = True  # Mark soft delete
-        instance.save()
-        return Response(status=status.HTTP_204_NO_CONTENT)
 
-
-class GenreListView(viewsets.ReadOnlyModelViewSet):
+class GenreListView(IMDBUserPermission):
     """
     Viewset for Genres info for list and retrieve
 
@@ -55,15 +68,20 @@ class GenreListView(viewsets.ReadOnlyModelViewSet):
         GET:
             Genre List: curl http://localhost:8000/api/genres/ -X GET -H "Authorization: Token <token_id>"
             A Genre Info: curl http://localhost:8000/api/genres/<genre_id>/ -X GET -H "Authorization: Token <token_id>"
+        POST:
+            With Json Data: curl http://localhost:8000/api/genres/ -X POST -d '{"genre": "<genre_name>"}'
+                -H "Authorization: Token 15e42b6b6f9d331cd051d93e6e1095e709a6508b" -H "Content-Type: application/json"
+            With Form Data: curl http://localhost:8000/api/genres/ -X POST -d 'genre=<genre_name>'
+                -H "Authorization: Token 15e42b6b6f9d331cd051d93e6e1095e709a6508b"
+        PUT:
+            curl http://localhost:8000/api/genres/<genre_id>/ -X PUT -d 'genre=<genre_name>'
+            -H "Authorization: Token 15e42b6b6f9d331cd051d93e6e1095e709a6508b"
     """
-    authentication_classes = (TokenAuthentication, SessionAuthentication,)
-    permission_classes = (permissions.IsAuthenticated, )
-
     serializer_class = GenresSerializer
     queryset = Genres.objects.all()
 
 
-class DirectorListView(viewsets.ReadOnlyModelViewSet):
+class DirectorListView(IMDBUserPermission):
     """
     Viewset for Directors info for list and retrieve
 
@@ -73,8 +91,6 @@ class DirectorListView(viewsets.ReadOnlyModelViewSet):
             Director list: curl http://localhost:8000/api/directors/ -X GET -H "Authorization: Token <token_id>"
             A Director info: curl http://localhost:8000/api/directors/<director_id>/ -X GET -H "Authorization: Token <token_id>"
     """
-    authentication_classes = (TokenAuthentication, SessionAuthentication,)
-    permission_classes = (permissions.IsAuthenticated, )
 
     serializer_class = DirectorsSerializer
     queryset = Directors.objects.all()
