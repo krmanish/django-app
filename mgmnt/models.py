@@ -36,15 +36,14 @@ class Genres(IMDBDatetime):
         """
         Get All active Record
         """
-        return cls.objects.filter(is_active=True)
-
+        return cls.objects.filter(is_active=True).order_by('-updated_ts')
 
     objects = GenresManager()
 
 
 class Directors(IMDBDatetime):
     """
-    All Director list
+    Model to store all director name
     """
     full_name = models.CharField(unique=True, max_length=255, help_text="Directors full name")
     is_active = models.BooleanField(default=True, help_text="Flags to mark data as active or inactive")
@@ -64,7 +63,7 @@ class Directors(IMDBDatetime):
         """
         Get All active Record
         """
-        return cls.objects.filter(is_active=True)
+        return cls.objects.filter(is_active=True).order_by('-updated_ts')
 
     objects = DirectorsManager()
 
@@ -74,9 +73,8 @@ class Movies(IMDBDatetime):
     Model to manage all movies info
     """
     created_user = models.ForeignKey(User, db_index=True, blank=True, null=True)
-    genre = models.ManyToManyField(Genres, db_index=True, related_name="associated_genre")
+    genre = models.ManyToManyField(Genres, db_index=True)
     director = models.ForeignKey(Directors, db_index=True)
-    popularity = models.DecimalField(max_digits=4, decimal_places=2, blank=True, null=True, help_text="99popularity")
     imdb_score = models.DecimalField(max_digits=2, decimal_places=1, blank=True, null=True, db_index=True, help_text="IMDB scores")
     name = models.CharField(max_length=255, db_index=True)
     is_active = models.BooleanField(default=True, help_text="Flags to mark data as active or inactive")
@@ -98,7 +96,14 @@ class Movies(IMDBDatetime):
         """
         Get all active and non-deleted movies list
         """
-        return cls.objects.filter(is_active=True, is_deleted=False, director__is_active=True, genre__is_active=True)
+        return cls.objects.filter(is_active=True, is_deleted=False, director__is_active=True).order_by('-updated_ts')
+
+    @property
+    def popularity(self):
+        """
+        Get 99popularity value
+        """
+        return self.imdb_score * 10
 
     @classmethod
     def get_name_by_genre(cls, genre_id):
@@ -108,11 +113,13 @@ class Movies(IMDBDatetime):
         return cls.objects.filter(is_active=True, is_deleted=False, genre__id=genre_id)
 
     @classmethod
-    def get_name_by_user(cls, user_id):
+    def is_exist_by_name_director(cls, name, director_name):
         """
-        get record by user
+        get record by movie name and director name
         """
-        return cls.objects.filter(is_active=True, is_deleted=False, user__id=user_id)
+        return cls.objects.filter(
+            name__iexact=name, is_active=True, is_deleted=False,
+            director__full_name__iexact=director_name, director__is_active=True)
 
     @classmethod
     def get_name_by_user(cls, director_id):

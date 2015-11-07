@@ -1,5 +1,9 @@
 from django.db import models
 
+
+TRIM_SPACES = lambda info: info.strip()
+
+
 class GenresManager(models.Manager):
     """
     Genre table manager
@@ -10,7 +14,7 @@ class GenresManager(models.Manager):
         strip spaces around string
         """
         if 'genre' in kwargs:
-            kwargs['genre__iexact'] = kwargs['genre'].strip()
+            kwargs['genre__iexact'] = TRIM_SPACES(kwargs['genre'])
             del kwargs['genre']
         return super(GenresManager, self).get(*args, **kwargs)
 
@@ -42,7 +46,7 @@ class DirectorsManager(models.Manager):
         strip spaces around string
         """
         if 'full_name' in kwargs:
-            kwargs['full_name__iexact'] = kwargs['full_name'].strip()
+            kwargs['full_name__iexact'] = TRIM_SPACES(kwargs['full_name'])
             del kwargs['full_name']
         return super(DirectorsManager, self).get(*args, **kwargs)
 
@@ -66,12 +70,50 @@ class MoviesManager(models.Manager):
     """
     Movies table manager
     """
+
     def get(self, *args, **kwargs):
         """
         Override filter to compare genre with case insensitive and
         strip spaces around string
         """
         if 'name' in kwargs:
-            kwargs['name__iexact'] = kwargs['name'].strip()
+            kwargs['name__iexact'] = TRIM_SPACES(kwargs['name'])
             del kwargs['name']
         return super(MoviesManager, self).get(*args, **kwargs)
+
+    def save_with_related(self, data, movie_obj=False):
+        """
+        Save or update info with all required info
+        """
+
+        from mgmnt.models import Directors, Genres
+
+        name = TRIM_SPACES(data['name'])
+        genre_list = data['genre']  # Should be a list of name
+        director_name = TRIM_SPACES(data['director'])  # Director Name
+        imdb_score = data['imdb_score']  # imdb score
+
+        genre_list = [genre_list] if not isinstance(genre_list, list) else genre_list
+        genre_list = map(TRIM_SPACES, genre_list)
+
+        # Genre objects
+        genre_objs = Genres.objects.bulk_get_or_create(genre_list)
+
+        # Director object
+        director, created = Directors.objects.get_or_create(full_name=director_name)
+        if created:
+            director.save()
+
+        if not movie_obj:
+            # Create Movies object
+            movie_obj, created = self.model.objects.get_or_create(name=name, director=director)
+            if created:
+                movie_obj.imdb_score = imdb_score
+                movie_obj.created_user = data['user']
+
+        # Delete all all related genre object
+        self.model.genre.through.objects.filter(movies=movie_obj).delete()
+
+        for obj in genre_objs:
+            movie_obj.genre.add(obj)
+        movie_obj.save()

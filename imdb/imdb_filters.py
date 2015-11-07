@@ -26,15 +26,16 @@ class MoviesFilter(IMDBBaseFilter):
     # Search with minimum imdb rating 4 i.e >4
     min_imdb = django_filters.NumberFilter(name='imdb_score', lookup_type='gt')
 
-    # Search with popularity 4 i.e <=4
-    max_popularity = django_filters.NumberFilter(name='popularity', lookup_type='lte')
-    # Search with minimum imdb rating 4 i.e >4
-    min_popularity = django_filters.NumberFilter(name='popularity', lookup_type='gt')
+    # popularity = django_filters.NumberFilter(name='popularity', lookup_type='lte')
+    # # Search with popularity 4 i.e <=4
+    # max_popularity = django_filters.NumberFilter(name='popularity', lookup_type='lte')
+    # # Search with minimum imdb rating 4 i.e >4
+    # min_popularity = django_filters.NumberFilter(name='popularity', lookup_type='gt')
 
     class Meta:
         model = Movies
-        fields = ('name', 'imdb_score', 'popularity', 'director_name', 'genre_name',
-                  'max_imdb', 'min_imdb', 'max_popularity', 'min_popularity', 'from_date')
+        fields = ('name', 'imdb_score', 'director_name', 'genre_name',
+                  'max_imdb', 'min_imdb', 'from_date')
 
 
 class GenresFilter(IMDBBaseFilter):
@@ -55,5 +56,5 @@ class DirectorsFilter(IMDBBaseFilter):
     name = django_filters.CharFilter(name='full_name', lookup_type='icontains')
 
     class Meta:
-        model = Genres
+        model = Directors
         fields = ('name', 'from_date')

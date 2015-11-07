@@ -20,6 +20,6 @@ class IMDBUserPermission(permissions.IsAuthenticated):
         admin_user = getattr(request.user, 'is_staff', False) if request.user else False
         if is_authentic and req_method == 'GET':
             is_allowed = True
-        elif is_authentic and admin_user and req_method in ('POST', 'PUT', 'DELETE',):
+        elif is_authentic and admin_user and req_method in ('POST', 'PUT', 'DELETE', ):
             is_allowed = True
         return is_allowed
