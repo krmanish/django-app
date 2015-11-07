@@ -1,6 +1,7 @@
-from django.db import models
 from django.contrib.auth.models import User
-from .manager import GenresManager, DirectorsManager, MoviesManager
+from django.db import models
+
+from .manager import DirectorsManager, GenresManager, MoviesManager
 
 
 class IMDBDatetime(models.Model):
@@ -66,7 +67,7 @@ class Movies(IMDBDatetime):
     Model to manage all movies info
     """
     created_user = models.ForeignKey(User, db_index=True, blank=True, null=True)
-    genre = models.ManyToManyField(Genres, db_index=True)
+    genre = models.ManyToManyField(Genres, db_index=True, related_name="associated_genre")
     director = models.ForeignKey(Directors, db_index=True)
     popularity = models.DecimalField(max_digits=4, decimal_places=2, blank=True, null=True, help_text="99popularity")
     imdb_score = models.DecimalField(max_digits=2, decimal_places=1, blank=True, null=True, db_index=True, help_text="IMDB scores")
@@ -90,7 +91,7 @@ class Movies(IMDBDatetime):
         """
         Get all active and non-deleted movies list
         """
-        return self.objects.filter(is_active=True, is_deleted=False, director__is_active=True)
+        return self.objects.filter(is_active=True, is_deleted=False, director__is_active=True, genre__is_active=True)
 
     @classmethod
     def get_name_by_genre(self, genre_id):

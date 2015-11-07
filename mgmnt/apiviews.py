@@ -1,4 +1,4 @@
-from imdb.imdb_filters import MoviesFilter
+from imdb.imdb_filters import DirectorsFilter, GenresFilter, MoviesFilter
 from imdb.imdb_permissions import IMDBUserPermission
 from mgmnt.models import Directors, Genres, Movies
 from mgmnt.serializers import (
@@ -23,6 +23,7 @@ class IMDBUserPermission(viewsets.ModelViewSet):
     authentication_classes = (TokenAuthentication, SessionAuthentication,)
     permission_classes = (IMDBUserPermission, )
     parser_classes = (JSONParser, FormParser, )
+    filter_backends = (DjangoFilterBackend, )
 
     def destroy(self, request, *args, **kwargs):
         """
@@ -55,13 +56,12 @@ class MovieViewSet(IMDBUserPermission):
 
     serializer_class = MoviesSerializer
     queryset = Movies.get_all_movies()
-    filter_backends = (DjangoFilterBackend, )
     filter_class = MoviesFilter
 
 
 class GenreListView(IMDBUserPermission):
     """
-    Viewset for Genres info for list and retrieve
+    Viewset for Genres info for list/retrieve/delete/update
 
     Interact with API with CURL
     Example:
@@ -76,21 +76,28 @@ class GenreListView(IMDBUserPermission):
         PUT:
             curl http://localhost:8000/api/genres/<genre_id>/ -X PUT -d 'genre=<genre_name>'
             -H "Authorization: Token 15e42b6b6f9d331cd051d93e6e1095e709a6508b"
+        Search:
+            Search:
+            curl http://localhost:8000/api/genres/?genre=<name_text> -X GET -H "Authorization: Token <token_id>"
     """
     serializer_class = GenresSerializer
-    queryset = Genres.objects.all()
+    queryset = Genres.get_all()
+    filter_class = GenresFilter
 
 
 class DirectorListView(IMDBUserPermission):
     """
-    Viewset for Directors info for list and retrieve
+    Viewset for Directors info for list/retrieve/delete/update
 
     Interact with API with CURL
     Example:
         GET:
             Director list: curl http://localhost:8000/api/directors/ -X GET -H "Authorization: Token <token_id>"
             A Director info: curl http://localhost:8000/api/directors/<director_id>/ -X GET -H "Authorization: Token <token_id>"
+        Search:
+            curl http://localhost:8000/api/directors/?name=<name_text> -X GET -H "Authorization: Token <token_id>"
     """
 
     serializer_class = DirectorsSerializer
-    queryset = Directors.objects.all()
+    queryset = Directors.get_all()
+    filter_class = DirectorsFilter
