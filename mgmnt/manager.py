@@ -108,8 +108,9 @@ class MoviesManager(models.Manager):
             # Create Movies object
             movie_obj, created = self.model.objects.get_or_create(name=name, director=director)
             if created:
-                movie_obj.imdb_score = imdb_score
                 movie_obj.created_user = data['user']
+
+        movie_obj.imdb_score = imdb_score
 
         # Delete all all related genre object
         self.model.genre.through.objects.filter(movies=movie_obj).delete()
