@@ -65,6 +65,10 @@ class MovieViewSet(IMDBUserPermission):
         Search:
             curl http://drftest.herokuapp.com/api/movies/?genre_name=Adventure\&imdb_score=8.0 -X GET
             -H "Authorization: Token <token_id>"
+            curl http://drftest.herokuapp.com/api/directors/?from_date=<date_in_YYYY-MM-DD> -X GET
+            -H "Authorization: Token <token_id"
+            curl http://drftest.herokuapp.com/api/movies/?director_name=<dir_name>\&genre_name=<genre>\&imdb_score=<imdb_score>
+            -X GET -H "Authorization: Token bd1b9fa295227ea2ecca9fbe183ed25f10b61dbf"
     """
 
     queryset = Movies.get_all_movies()
@@ -96,7 +100,7 @@ class MovieViewSet(IMDBUserPermission):
 
     def update(self, request, *args, **kwargs):
         """
-        Update record using partial
+        Update movies record with complete info
         """
         partial = False
         api_response_dict = {'success': False, 'errors': [], 'message': ''}
@@ -161,6 +165,8 @@ class GenreListView(IMDBUserPermission):
             -H "Authorization: Token <token_id>"
         Search:
             curl http://drftest.herokuapp.com/api/genres/?genre=<name_text> -X GET -H "Authorization: Token <token_id>"
+            curl http://drftest.herokuapp.com/api/directors/?from_date=<date_in_YYYY-MM-DD> -X GET
+            -H "Authorization: Token <token_id"
     """
     serializer_class = GenresSerializer
     queryset = Genres.get_all()
@@ -184,6 +190,8 @@ class DirectorListView(IMDBUserPermission):
             -H "Authorization: Token <token_id>"  -H "Content-Type: application/json"
         Search:
             curl http://drftest.herokuapp.com/api/directors/?name=<name_text> -X GET -H "Authorization: Token <token_id>"
+            curl http://drftest.herokuapp.com/api/directors/?from_date=<date_in_YYYY-MM-DD> -X GET
+            -H "Authorization: Token <token_id"
     """
 
     serializer_class = DirectorsSerializer
