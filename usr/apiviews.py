@@ -18,6 +18,10 @@ class UserViewSet(viewsets.ModelViewSet):
         GET:
             User List: curl http://localhost:8000/api/users/ -X GET -H "Authorization: Token <token_id>"
             An User Info: curl http://localhost:8000/api/users/<user_id>/ -X GET -H "Authorization: Token <token_id>"
+        POST:
+            curl http://localhost:8000/api/users/ -X POST
+            -d '{"username": <username>, "password": <password>,"confirm_password": <password>, "email": <email>}'
+            -H "Authorization: Token <token_id>" -H "Content-Type: application/json"
     """
     authentication_classes = (TokenAuthentication, SessionAuthentication,)
     permission_classes = (permissions.IsAdminUser, )
