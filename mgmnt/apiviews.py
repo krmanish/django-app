@@ -49,21 +49,21 @@ class MovieViewSet(IMDBUserPermission):
     Interact with API with CURL using token based login
     Example:
         GET:
-            Movies List: curl http://localhost:8000/api/movies/ -X GET -H "Authorization: Token <token_id>"
-            A Movie Info: curl http://localhost:8000/api/movies/<movie_id>/ -X GET -H "Authorization: Token <token_id>"
+            Movies List: curl http://drftest.herokuapp.com/api/movies/ -X GET -H "Authorization: Token <token_id>"
+            A Movie Info: curl http://drftest.herokuapp.com/api/movies/<movie_id>/ -X GET -H "Authorization: Token <token_id>"
             Retrieve:
-                curl http://localhost:8000/api/movies/501/ -X GET  -H "Authorization: Token <token_id>"
+                curl http://drftest.herokuapp.com/api/movies/501/ -X GET  -H "Authorization: Token <token_id>"
         POST:
             Create:
-                curl http://localhost:8000/api/movies/ -X POST
+                curl http://drftest.herokuapp.com/api/movies/ -X POST
                 -d '{"genre": <list of genre>, "director": <genre_name>, "name": <movie_name>, "imdb_score": <imdb_score>}'
                 -H "Authorization: Token <token_id>" -H "Content-Type: application/json"
         PUT/PATCH: Always Accept complete update
-            curl http://localhost:8000/api/movies/501/ -X PUT
+            curl http://drftest.herokuapp.com/api/movies/501/ -X PUT
             d '{"genre": <list of genre>, "director": <genre_name>, "name": <movie_name>, "imdb_score": <imdb_score>}'
             -H "Authorization: Token <token_id>" -H "Content-Type: application/json"
         Search:
-            curl http://localhost:8000/api/movies/?genre_name=Adventure\&imdb_score=8.0 -X GET
+            curl http://drftest.herokuapp.com/api/movies/?genre_name=Adventure\&imdb_score=8.0 -X GET
             -H "Authorization: Token <token_id>"
     """
 
@@ -149,18 +149,18 @@ class GenreListView(IMDBUserPermission):
     Interact with API with CURL
     Example:
         GET:
-            Genre List: curl http://localhost:8000/api/genres/ -X GET -H "Authorization: Token <token_id>"
-            A Genre Info: curl http://localhost:8000/api/genres/<genre_id>/ -X GET -H "Authorization: Token <token_id>"
+            Genre List: curl http://drftest.herokuapp.com/api/genres/ -X GET -H "Authorization: Token <token_id>"
+            A Genre Info: curl http://drftest.herokuapp.com/api/genres/<genre_id>/ -X GET -H "Authorization: Token <token_id>"
         POST:
-            With Json Data: curl http://localhost:8000/api/genres/ -X POST -d '{"genre": "<genre_name>"}'
+            With Json Data: curl http://drftest.herokuapp.com/api/genres/ -X POST -d '{"genre": "<genre_name>"}'
                 -H "Authorization: Token <token_id>" -H "Content-Type: application/json"
-            With Form Data: curl http://localhost:8000/api/genres/ -X POST -d 'genre=<genre_name>'
+            With Form Data: curl http://drftest.herokuapp.com/api/genres/ -X POST -d 'genre=<genre_name>'
                 -H "Authorization: Token <token_id>"
         PUT:
-            curl http://localhost:8000/api/genres/<genre_id>/ -X PUT -d 'genre=<genre_name>'
+            curl http://drftest.herokuapp.com/api/genres/<genre_id>/ -X PUT -d 'genre=<genre_name>'
             -H "Authorization: Token <token_id>"
         Search:
-            curl http://localhost:8000/api/genres/?genre=<name_text> -X GET -H "Authorization: Token <token_id>"
+            curl http://drftest.herokuapp.com/api/genres/?genre=<name_text> -X GET -H "Authorization: Token <token_id>"
     """
     serializer_class = GenresSerializer
     queryset = Genres.get_all()
@@ -174,16 +174,16 @@ class DirectorListView(IMDBUserPermission):
     Interact with API with CURL
     Example:
         GET:
-            Director list: curl http://localhost:8000/api/directors/ -X GET -H "Authorization: Token <token_id>"
-            A Director info: curl http://localhost:8000/api/directors/<director_id>/ -X GET -H "Authorization: Token <token_id>"
+            Director list: curl http://drftest.herokuapp.com/api/directors/ -X GET -H "Authorization: Token <token_id>"
+            A Director info: curl http://drftest.herokuapp.com/api/directors/<director_id>/ -X GET -H "Authorization: Token <token_id>"
         POST:
-            curl http://localhost:8000/api/directors/ -X POST -d '{"full_name": <full_name>}'
+            curl http://drftest.herokuapp.com/api/directors/ -X POST -d '{"full_name": <full_name>}'
             -H "Authorization: Token <token_id>" -H "Content-Type: application/json"
         PUT:
-            curl http://localhost:8000/api/directors/<genre_id>/ -X PUT -d '{"full_name": <genre_name>}'
+            curl http://drftest.herokuapp.com/api/directors/<genre_id>/ -X PUT -d '{"full_name": <genre_name>}'
             -H "Authorization: Token <token_id>"  -H "Content-Type: application/json"
         Search:
-            curl http://localhost:8000/api/directors/?name=<name_text> -X GET -H "Authorization: Token <token_id>"
+            curl http://drftest.herokuapp.com/api/directors/?name=<name_text> -X GET -H "Authorization: Token <token_id>"
     """
 
     serializer_class = DirectorsSerializer

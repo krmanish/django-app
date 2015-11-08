@@ -16,10 +16,10 @@ class UserViewSet(viewsets.ModelViewSet):
     Interact with API with CURL using token based login
     Example:
         GET:
-            User List: curl http://localhost:8000/api/users/ -X GET -H "Authorization: Token <token_id>"
-            An User Info: curl http://localhost:8000/api/users/<user_id>/ -X GET -H "Authorization: Token <token_id>"
+            User List: curl http://drftest.herokuapp.com/api/users/ -X GET -H "Authorization: Token <token_id>"
+            An User Info: curl http://drftest.herokuapp.com/api/users/<user_id>/ -X GET -H "Authorization: Token <token_id>"
         POST:
-            curl http://localhost:8000/api/users/ -X POST
+            curl http://drftest.herokuapp.com/api/users/ -X POST
             -d '{"username": <username>, "password": <password>,"confirm_password": <password>, "email": <email>}'
             -H "Authorization: Token <token_id>" -H "Content-Type: application/json"
     """
